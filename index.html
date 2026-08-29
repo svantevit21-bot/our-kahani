@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our कहानी</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #080808;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .screen {
+      min-height: 100vh;
+      width: 100%;
+      display: none;
+      animation: fadeIn 0.7s ease forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #questionScreen 
+    {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.8)),
+        url("https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1600&q=80")
+        center / cover;
+    }
+
+    #questionScreen.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .question-card {
+      background: rgba(10, 10, 10, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px;
+      padding: 45px 28px;
+      max-width: 620px;
+      width: 100%;
+      min-height: 470px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .small-label {
+      color: #e50914;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+    }
+
+    .question-card h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      margin-bottom: 15px;
+      line-height: 1.05;
+    }
+
+    .question-card p {
+      color: #d8d8d8;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .button-row {
+      height: 150px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .yes-btn {
+      background: #e50914;
+      color: white;
+      box-shadow: 0 10px 30px rgba(229, 9, 20, 0.35);
+    }
+
+    .no-btn {
+      background: white;
+      color: #111;
+      position: relative;
+      white-space: nowrap;
+      max-width: calc(100vw - 48px);
+      margin: 0;
+      z-index: 999;
+      transition:
+        left 0.25s ease,
+        top 0.25s ease,
+        background 0.3s ease,
+        color 0.3s ease,
+        opacity 1.6s ease,
+        filter 1.6s ease,
+        transform 1.6s ease;
+    }
+
+    .no-btn:hover {
+      transform: none;
+    }
+
+    #profileScreen {
+      min-height: 100vh;
+      background: #080808;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    #profileScreen.active {
+      display: flex;
+    }
+
+    .profile-select h1 {
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 500;
+      margin-bottom: 38px;
+    }
+
+    .profile-card {
+      background: transparent;
+      color: #b3b3b3;
+      border-radius: 8px;
+      padding: 0;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .profile-card:hover {
+      color: white;
+      transform: scale(1.06);
+    }
+
+    .profile-avatar {
+      width: clamp(130px, 24vw, 190px);
+      height: clamp(130px, 24vw, 190px);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 4px solid transparent;
+      transition: border-color 0.2s ease;
+    }
+
+    .profile-card:hover .profile-avatar {
+      border-color: white;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      font-size: clamp(1.2rem, 3vw, 1.7rem);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0));
+    }
+
+    .logo {
+      color: #e50914;
+      font-size: clamp(1.2rem, 3vw, 2.1rem);
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .nav-note {
+      color: #ddd;
+      font-size: 0.95rem;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 85vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 110px 5vw 70px;
+      overflow: hidden;
+      background: #080808;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(0.80);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to top, #080808 0%, rgba(8, 8, 8, 0.30) 45%, rgba(8, 8, 8, 0.78) 100%),
+        linear-gradient(to right, rgba(8, 8, 8, 0.85) 0%, rgba(8, 8, 8, 0.25) 45%, rgba(8, 8, 8, 0.15) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      line-height: 0.95;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      color: #e8e8e8;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .play-btn {
+      background: white;
+      color: black;
+    }
+
+    .info-btn {
+      background: rgba(120, 120, 120, 0.55);
+      color: white;
+    }
+
+    .content {
+      padding: 0 0 60px;
+      margin-top: -30px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .row {
+      margin-bottom: 42px;
+      padding-left: 5vw;
+    }
+
+    .row h2 {
+      font-size: clamp(1.2rem, 3vw, 1.7rem);
+      margin-bottom: 14px;
+    }
+
+    .card-row {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 5px 5vw 15px 0;
+      scroll-behavior: smooth;
+    }
+
+    .card-row::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .card-row::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 99px;
+    }
+
+    .memory-card {
+      min-width: 230px;
+      height: 135px;
+      text-decoration: none;
+      color: white;
+      border-radius: 12px;
+      background: #222;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .memory-card:hover {
+      transform: scale(1.08);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55);
+      z-index: 3;
+    }
+
+    .memory-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #111;
+      filter: brightness(0.9);
+    }
+
+    .card-title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 28px 12px 10px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.86), transparent);
+      font-weight: bold;
+      font-size: 0.98rem;
+    }
+
+    
+    .museum-vault {
+      margin: 20px 5vw 60px;
+  
+      padding: clamp(28px, 5vw, 56px);
+  
+      border-radius: 28px;
+  
+      background:
+  
+      radial-gradient(circle at top left, rgba(229, 9, 20, 0.30), transparent 34%),
+  
+      linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  
+      border: 1px solid rgba(255, 255, 255, 0.14);
+  
+      display: grid;
+  
+  
+      grid-template-columns: 1fr 1.25fr;
+  
+      gap: 28px;
+  
+      align-items: center;
+  
+      position: relative;
+  
+      overflow: hidden;
+
+    }
+
+
+    .museum-copy h2 {
+
+      font-size: clamp(2rem, 5vw, 4rem);
+
+      line-height: 1;
+
+      margin-bottom: 16px;
+
+    }
+
+
+    .museum-copy p {
+
+      color: #dddddd;
+
+      line-height: 1.7;
+
+      font-size: 1.05rem;
+
+      max-width: 560px;
+
+    }
+
+
+    .vault-card {
+
+      min-height: 320px;
+
+      border-radius: 24px;
+
+      color: white;
+
+      text-decoration: none;
+
+      position: relative;
+
+      overflow: hidden;
+
+      background:
+
+      linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.75)),
+
+      url("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1200&q=80") center/cover;
+
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+
+      border: 1px solid rgba(255, 255, 255, 0.18);
+
+      display: flex;
+
+      align-items: flex-end;
+
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+    }
+
+
+    .vault-card:hover {
+
+      transform: scale(1.025);
+
+      box-shadow: 0 34px 90px rgba(0, 0, 0, 0.68);
+
+    }
+
+
+    .vault-shine {
+
+      position: absolute;
+
+      inset: 0;
+
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 45%, transparent 70%);
+
+      transform: translateX(-100%);
+
+      transition: transform 0.8s ease;
+
+    }
+
+
+    .vault-card:hover .vault-shine {
+
+      transform: translateX(100%);
+
+    }
+
+
+    .vault-content {
+
+      position: relative;
+
+      z-index: 2;
+
+      padding: 30px;
+
+    }
+
+
+    .vault-icon {
+
+      font-size: 2.4rem;
+
+      margin-bottom: 14px;
+
+    }
+
+
+    .vault-content h3 {
+
+      font-size: clamp(1.8rem, 4vw, 3rem);
+
+      margin-bottom: 12px;
+
+    }
+
+
+    .vault-content p {
+
+      color: #e3e3e3;
+
+      line-height: 1.6;
+
+      max-width: 620px;
+
+      margin-bottom: 18px;
+
+    }
+
+
+    .vault-content span {
+
+      display: inline-block;
+
+      background: #e50914;
+
+      padding: 12px 20px;
+
+      border-radius: 999px;
+
+      font-weight: bold;
+
+    }
+
+    .final-message {
+      margin: 20px 5vw 60px;
+      padding: 38px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(229, 9, 20, 0.18), rgba(255, 255, 255, 0.06));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      max-width: 900px;
+    }
+
+    .final-message h2 {
+      font-size: clamp(1.7rem, 4vw, 2.8rem);
+      margin-bottom: 14px;
+    }
+
+    .final-message p {
+      color: #e6e6e6;
+      line-height: 1.7;
+      font-size: 1.08rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.82);
+      z-index: 100;
+      padding: 22px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(900px, 100%);
+      background: #151515;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+      animation: popIn 0.25s ease forwards;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-gallery {
+      position: relative;
+      background: #111;
+    }
+
+    .gallery-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.68);
+      color: white;
+      font-size: 2rem;
+      line-height: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .gallery-btn:hover {
+      transform: translateY(-50%) scale(1.05);
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    .gallery-btn.left {
+      left: 14px;
+    }
+
+    .gallery-btn.right {
+      right: 14px;
+    }
+
+    .modal-image {
+      width: 100%;
+      height: min(70vh, 600px);
+      object-fit: contain;
+      background: #111;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-body h3 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .modal-body p {
+      color: #ddd;
+      line-height: 1.7;
+    }
+
+    .image-counter {
+      margin-top: 10px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .close-btn {
+      margin-top: 18px;
+      background: #e50914;
+      color: white;
+    }
+
+    .hint-player {
+  
+      position: fixed;
+  
+      right: 24px;
+  
+      bottom: 24px;
+  
+      z-index: 9999;
+  
+      display: flex;
+  
+      align-items: flex-end;
+  
+      gap: 14px;
+
+    }
+
+
+    .cd-button {
+
+      position: relative;
+
+      width: 90px;
+
+      height: 90px;
+
+      border: none;
+
+      border-radius: 50%;
+
+      cursor: pointer;
+
+      padding: 0;
+
+      background:
+
+      radial-gradient(circle at center,
+
+      #d61b2f 0%,
+
+      #b50016 12%,
+
+      #111 13%,
+
+      #111 18%,
+
+      #222 19%,
+
+      #090909 100%);
+
+      box-shadow:
+
+      0 0 28px rgba(229, 9, 20, 0.35),
+
+      0 14px 40px rgba(0, 0, 0, 0.8),
+
+      inset 0 0 4px rgba(255,255,255,0.35);
+
+      overflow: hidden;
+
+      transition: transform 0.3s ease;
+
+    }
+
+
+    .cd-button:hover {
+
+      transform: scale(1.08);
+
+    }
+
+
+    .cd-button::before {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 7px;
+
+      border-radius: 50%;
+
+      background:
+
+      repeating-radial-gradient(
+
+      circle,
+
+      transparent 0px,
+
+      transparent 3px,
+
+      rgba(255,255,255,0.07) 3px,
+
+      rgba(255,255,255,0.07) 4px
+
+      );
+
+    }
+
+
+    .cd-button::after {
+
+      content: "";
+
+      position: absolute;
+
+      width: 22px;
+
+      height: 22px;
+
+      border-radius: 50%;
+
+      background: #d61b2f;
+
+      left: 50%;
+
+      top: 50%;
+
+      transform: translate(-50%, -50%);
+
+      box-shadow: 0 0 0 5px #111;
+
+    }
+
+
+    .spinning {
+
+      animation: spinCD 4s linear infinite;
+
+    }
+
+
+    @keyframes spinCD {
+
+      from { transform: rotate(0deg); }
+
+      to { transform: rotate(360deg); }
+
+    }
+
+
+    .hint-box {
+
+      width: 265px;
+
+      padding: 24px;
+
+      border-radius: 22px;
+
+      background: rgba(18, 18, 18, 0.96);
+
+      border: 1px solid rgba(255,255,255,0.12);
+
+      box-shadow: 0 22px 70px rgba(0,0,0,0.75);
+
+      backdrop-filter: blur(16px);
+
+      display: none;
+
+      transform-origin: bottom right;
+
+      animation: popup 0.25s ease;
+
+    }
+
+
+    .hint-box.active {
+
+      display: block;
+
+    }
+
+
+    @keyframes popup {
+
+      from {
+
+        opacity: 0;
+
+        transform: translateY(12px) scale(0.94);
+
+      }
+
+      to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+      }
+
+    }
+
+
+    .hint-box h3 {
+
+      font-size: 1.45rem;
+
+      margin-bottom: 10px;
+
+    }
+
+
+    .hint-box p {
+
+      color: #d5d5d5;
+
+      line-height: 1.5;
+
+      margin-bottom: 18px;
+
+    }
+
+
+    .spotify-btn {
+
+      display: inline-block;
+
+      background: #e50914;
+
+      color: white;
+
+      text-decoration: none;
+
+      padding: 12px 18px;
+
+      border-radius: 999px;
+
+      font-weight: bold;
+
+    }
+    
+    .spinning{
+    
+      animation:spinCD 4s linear infinite;
+
+    }
+
+
+    @keyframes spinCD {
+
+      from { transform: rotate(0deg); }
+
+      to { transform: rotate(30deg); }
+
+    }
+
+    @media (max-width: 650px) {
+      .navbar {
+        height: 62px;
+      }
+
+      .nav-note {
+        display: none;
+      }
+
+      .hero {
+        min-height: 78vh;
+        padding-bottom: 45px;
+      }
+
+      .memory-card {
+        min-width: 185px;
+        height: 115px;
+      }
+
+      .final-message {
+        padding: 26px;
+      }
+
+      .museum-vault {
+        grid-template-columns: 1fr;
+      }
+
+      .vault-card {
+        min-height: 260px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="questionScreen" class="screen active">
+    <section class="question-card">
+      <h1 id="questionTitle">Will you be my date tonight?</h1>
+
+      <p id="questionSubtitle" style="margin-top: 18px; color: #dddddd; font-size: 1.1rem; line-height: 1.6;">
+        I made a small surprise for the biggest heart.
+      </p>
+
+      <p style="margin-top: 10px; color: #bdbdbd; font-size: 1rem; line-height: 1.5;">
+        Proof that I missed you more.
+      </p>
+
+      <p style="margin-top: 10px; color: #bdbdbd; font-size: 1rem; line-height: 1.5;">
+        I hope my hints are finally clear enough to not require subtitles anymore.
+      </p>
+
+      <div class="button-row" id="buttonArea">
+        <button class="yes-btn" id="yesBtn">Yes, obviously</button>
+        <button class="no-btn" id="noBtn">No</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="profileScreen" class="screen">
+    <section class="profile-select">
+      <h1>Who's watching?</h1>
+
+      <button class="profile-card" id="profileCard" type="button">
+        <div class="profile-avatar">
+          <img src="images/profile/pingu.jpeg" alt="Pingu profile picture" />
+        </div>
+        <div class="profile-name">Pingu the Platypus</div>
+      </button>
+    </section>
+  </main>
+
+  <main id="netflixScreen" class="screen">
+    <nav class="navbar">
+      <div class="logo">Now and always streaming, Chhavi</div>
+      <div class="nav-note">Season 0 Episode 3 · Cutie Special</div>
+    </nav>
+
+    <section class="hero">
+      <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        <source src="videos/our-story.mp4" type="video/mp4">
+      </video>
+
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <div class="small-label">Now Streaming</div>
+        <h1>Our कहानी</h1>
+        <p>
+          A small collection of my favorite moments, favorite memories, and favorite reasons of why you're the best.
+          This is for you, for us, and for the beginning of many more episodes.
+        </p>
+
+        <div class="hero-buttons">
+          <button class="play-btn" onclick="scrollToMemories()">▶ Play Memories</button>
+          <button class="info-btn" onclick="openFinalMessage()">More Info</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" id="memories">
+      
+      <div class="row">
+  
+        <h2>Continue Watching: Us</h2>
+
+        <div class="card-row">
+
+          <article class="memory-card"
+
+            data-title="Episode 1 — Where It All Began 🎉"
+            data-note="All the pictures from the beginning of us, ik there aren't too many because I don't take too many pictures, but these pictures trigger memories for me and remind me of the absolutely DIABOLICAL nights that we've had with each other. But then again, which night is not the best when I'm with my pings. MUAHHHHHHHHHHH"
+            data-img="images/us/beginning/beginning-3.jpeg"
+            data-images="images/us/beginning/beginning-3.jpeg, images/us/beginning/beginning-2.jpeg, images/us/beginning/beginning-1.jpeg, images/us/beginning/beginning-4.jpeg, images/us/beginning/beginning-5.jpeg, images/us/beginning/beginning-6.jpeg, images/us/beginning/beginning-7.jpeg, images/us/beginning/beginning-8.jpeg">
+      
+            <img src="images/us/beginning/beginning-3.jpeg" alt="Where It All Began" />
+
+            <div class="card-title">
+              <span>Where It All Began 🎉</span>
+            </div>
+
+          </article>
+
+
+          <article class="memory-card"
+      
+            data-title="Episode 2 — Distance Never Stood a Chance 📱"
+            data-note="OMG how I have waited for this day to finally come. I finally get to see you, hold you in my arms and wake you up at 4.30 am for our amazing morning runs MUAHAHAH. But on a more loving and serious note, waiting for this long has been tough for both of us ik, but there is no one and I mean NO ONE in this world that I'd rather have waited with. You made it so much easier for me and the day is finally HERE. MUAHHHHHHH"
+            data-img="images/us/distance/distance-7.jpeg"
+            data-images="images/us/distance/distance-1.PNG, images/us/distance/distance-2.jpg, images/us/distance/distance-3.PNG, images/us/distance/distance-4.PNG, images/us/distance/distance-5.PNG, images/us/distance/distance-6.PNG">
+      
+            <img src="images/us/distance/distance-7.jpeg" alt="Distance Never Stood a Chance" />
+
+            <div class="card-title">
+              <span>Distance Never Stood a Chance 📱</span>
+            </div>
+    
+          </article>
+
+    
+          <article class="memory-card"
+      
+            data-title="Episode 3 — Proof We're Idiots Together 😂"
+            data-note="Look what I have done to you MUAHAHA. I still remember when Vedi asked me in tots 'why Chhavi?', and I said I think one of the best things about us is that we bring out the best sides of each other(the mature and clumsy thing), and this deck perfectly depicts that I think. I like to think I make you feel safe enough for you to be able to show that other side of yours. Each picture perfectly depicts all of our idiotic nights, and I cannot wait for soooooo many more. Also I hope you realize that when I say idiots I mean the cute kind, yeah just had to clarify, but I think you get it. MUAHHHHHH"
+            data-img="images/us/idiots/idiots-4.jpeg"
+            data-images="images/us/idiots/idiots-4.jpeg, images/us/idiots/idiots-2.jpeg, images/us/idiots/idiots-3.jpeg, images/us/idiots/idiots-1.jpeg, images/us/idiots/idiots-5.PNG, images/us/idiots/idiots-6.PNG, images/us/idiots/idiots-7.PNG, images/us/idiots/idiots-8.PNG, images/us/idiots/idiots-9.jpeg, images/us/idiots/idiots-10.jpeg, images/us/idiots/idiots-11.jpeg, images/us/idiots/idiots-12.jpeg, images/us/idiots/idiots-13.mp4">
+
+            <img src="images/us/idiots/idiots-4.jpeg" alt="Proof We're Idiots Together" />
+
+            <div class="card-title">
+              <span>Proof We're Idiots Together 😂</span>
+            </div>
+  
+          </article>
+
+    
+          <article class="memory-card"
+      
+            data-title="Episode 4 — Just the Beginning 🌱"
+            data-note="I mean only being 3 months and 12 days in, wait it's been that long?!?!?! this is obv only just the beginning for us, we're going to have so many moments together, may it be happy, serious, stupid, but never a dull moment with you. I cannot wait to see where this takes us and how many more things I make for you and PROVE to you once and for all that sirf yeh sab start mein nahi hota. MUAHHHHHHH"
+            data-img="images/us/just_begin/just_begin-4.jpeg"
+            data-images="images/us/just_begin/just_begin-4.jpeg, images/us/just_begin/just_begin-2.jpeg, images/us/just_begin/just_begin-3.jpeg, images/us/just_begin/just_begin-5.jpeg, images/us/just_begin/just_begin-1.jpeg, images/us/just_begin/just_begin-6.mp4">
+
+            <img src="images/us/just_begin/just_begin-4.jpeg" alt="Just the Beginning" />
+
+            <div class="card-title">
+              <span>Just the Beginning 🌱</span>
+            </div>
+
+          </article>
+        </div>
+      </div>
+
+      
+      <div class="row">
+        <h2>My All Time Favorite Notifications</h2>
+        <div class="card-row">
+
+  
+          <article class="memory-card"
+
+            data-title="Incoming Calls"
+            data-note="SO MANY CALLS and so many hours spent with each other. Here are most of the video calls that we have had over the last few overwhelmingly dreadful (your words btw if you can remember) weeks. I'm pretty sure I got most of them, I think I missed a few but I got like 95% I hope. But yeah still remember how I said I was only going to be talking to you for an hour a day and now we speak for like 4 hours a day. You've taught me so much about the calling culture and I call you literally whenever without even thinking now. I'm always looking forward to our regular calls every single day, and even though I might be tired or not feeling the best, after I see you and hear your voice, I just start to feel energized and my day literally brightens up. Also at this point I cannot wait to see you in person so that I can see you in HD resolution. MUAHHHHHH"
+            data-img="images/all_time/inc_calls/inc_calls-73.jpeg"
+            data-images="images/all_time/inc_calls/inc_calls-1.PNG, images/all_time/inc_calls/inc_calls-2.PNG, images/all_time/inc_calls/inc_calls-3.PNG, images/all_time/inc_calls/inc_calls-4.PNG, images/all_time/inc_calls/inc_calls-5.PNG, images/all_time/inc_calls/inc_calls-6.PNG, images/all_time/inc_calls/inc_calls-7.PNG, images/all_time/inc_calls/inc_calls-8.PNG, images/all_time/inc_calls/inc_calls-9.PNG, images/all_time/inc_calls/inc_calls-10.PNG, images/all_time/inc_calls/inc_calls-11.PNG, images/all_time/inc_calls/inc_calls-12.PNG, images/all_time/inc_calls/inc_calls-13.PNG, images/all_time/inc_calls/inc_calls-14.PNG, images/all_time/inc_calls/inc_calls-15.PNG, images/all_time/inc_calls/inc_calls-16.PNG, images/all_time/inc_calls/inc_calls-17.PNG, images/all_time/inc_calls/inc_calls-18.PNG, images/all_time/inc_calls/inc_calls-19.PNG, images/all_time/inc_calls/inc_calls-20.PNG, images/all_time/inc_calls/inc_calls-21.PNG, images/all_time/inc_calls/inc_calls-22.PNG, images/all_time/inc_calls/inc_calls-23.PNG, images/all_time/inc_calls/inc_calls-24.PNG, images/all_time/inc_calls/inc_calls-25.PNG, images/all_time/inc_calls/inc_calls-26.PNG, images/all_time/inc_calls/inc_calls-27.PNG, images/all_time/inc_calls/inc_calls-28.PNG, images/all_time/inc_calls/inc_calls-29.PNG, images/all_time/inc_calls/inc_calls-30.PNG, images/all_time/inc_calls/inc_calls-31.PNG, images/all_time/inc_calls/inc_calls-32.PNG, images/all_time/inc_calls/inc_calls-33.PNG, images/all_time/inc_calls/inc_calls-34.PNG, images/all_time/inc_calls/inc_calls-35.PNG, images/all_time/inc_calls/inc_calls-36.PNG, images/all_time/inc_calls/inc_calls-37.PNG, images/all_time/inc_calls/inc_calls-38.PNG, images/all_time/inc_calls/inc_calls-39.PNG, images/all_time/inc_calls/inc_calls-40.PNG, images/all_time/inc_calls/inc_calls-41.PNG, images/all_time/inc_calls/inc_calls-42.PNG, images/all_time/inc_calls/inc_calls-43.PNG, images/all_time/inc_calls/inc_calls-44.PNG, images/all_time/inc_calls/inc_calls-45.PNG, images/all_time/inc_calls/inc_calls-46.PNG, images/all_time/inc_calls/inc_calls-47.PNG, images/all_time/inc_calls/inc_calls-48.PNG, images/all_time/inc_calls/inc_calls-49.PNG, images/all_time/inc_calls/inc_calls-50.PNG, images/all_time/inc_calls/inc_calls-51.PNG, images/all_time/inc_calls/inc_calls-52.PNG, images/all_time/inc_calls/inc_calls-53.PNG, images/all_time/inc_calls/inc_calls-54.PNG, images/all_time/inc_calls/inc_calls-55.PNG, images/all_time/inc_calls/inc_calls-56.PNG, images/all_time/inc_calls/inc_calls-57.PNG, images/all_time/inc_calls/inc_calls-58.PNG, images/all_time/inc_calls/inc_calls-59.PNG, images/all_time/inc_calls/inc_calls-60.PNG, images/all_time/inc_calls/inc_calls-61.PNG, images/all_time/inc_calls/inc_calls-62.jpeg, images/all_time/inc_calls/inc_calls-63.jpeg, images/all_time/inc_calls/inc_calls-64.jpeg, images/all_time/inc_calls/inc_calls-65.jpeg, images/all_time/inc_calls/inc_calls-66.jpeg, images/all_time/inc_calls/inc_calls-67.jpeg, images/all_time/inc_calls/inc_calls-68.jpeg, images/all_time/inc_calls/inc_calls-69.jpeg, images/all_time/inc_calls/inc_calls-70.jpeg, images/all_time/inc_calls/inc_calls-71.jpeg, images/all_time/inc_calls/inc_calls-72.jpeg, images/all_time/inc_calls/inc_calls-74.jpeg, images/all_time/inc_calls/inc_calls-75.jpeg, images/all_time/inc_calls/inc_calls-76.jpeg, images/all_time/inc_calls/inc_calls-77.jpeg, images/all_time/inc_calls/inc_calls-78.jpeg, images/all_time/inc_calls/inc_calls-79.jpeg, images/all_time/inc_calls/inc_calls-80.jpeg, images/all_time/inc_calls/inc_calls-81.jpeg, images/all_time/inc_calls/inc_calls-82.jpeg, images/all_time/inc_calls/inc_calls-83.jpeg, images/all_time/inc_calls/inc_calls-84.jpeg">
+            <img src="images/all_time/inc_calls/inc_calls-73.jpeg" alt="Incoming Calls" />
+
+            <div class="card-title">Incoming Calls 📞</div>
+
+          </article>
+
+
+          <article class="memory-card"
+
+            data-title="Still Thinking About This"
+            data-note="Moments that I keep thinking about from time to time, even though you might have said them like a month ago these things sometimes I still think about and it makes me smile ALWAYS without fail. I mean tbh any thought of you makes me smile without fail, yk in so many of these deck things I'm literally just rambling but idc ok it's all sweet, and besides you get a kiss after each one. MUAHHHHHHH"
+            data-img="images/all_time/thinking/thinking-27.jpeg"
+            data-images="images/all_time/thinking/thinking-1.PNG, images/all_time/thinking/thinking-2.PNG, images/all_time/thinking/thinking-3.PNG, images/all_time/thinking/thinking-4.PNG, images/all_time/thinking/thinking-5.PNG, images/all_time/thinking/thinking-6.PNG, images/all_time/thinking/thinking-7.PNG, images/all_time/thinking/thinking-8.PNG, images/all_time/thinking/thinking-9.PNG, images/all_time/thinking/thinking-10.PNG, images/all_time/thinking/thinking-11.PNG, images/all_time/thinking/thinking-12.PNG, images/all_time/thinking/thinking-13.PNG, images/all_time/thinking/thinking-14.PNG, images/all_time/thinking/thinking-15.PNG, images/all_time/thinking/thinking-16.PNG, images/all_time/thinking/thinking-17.PNG, images/all_time/thinking/thinking-18.PNG, images/all_time/thinking/thinking-19.PNG, images/all_time/thinking/thinking-20.PNG, images/all_time/thinking/thinking-21.PNG, images/all_time/thinking/thinking-22.PNG, images/all_time/thinking/thinking-23.PNG, images/all_time/thinking/thinking-24.jpeg, images/all_time/thinking/thinking-25.jpeg, images/all_time/thinking/thinking-26.jpeg, images/all_time/thinking/thinking-28.jpeg, images/all_time/thinking/thinking-29.jpeg, images/all_time/thinking/thinking-30.jpeg, images/all_time/thinking/thinking-31.jpeg">
+
+            <img src="images/all_time/thinking/thinking-27.jpeg" alt="Still Thinking About This" />
+        
+            <div class="card-title">Still Thinking About This ❤️</div>
+      
+          </article>
+
+    
+          <article class="memory-card"
+      
+            data-title="Things That Made Me Feel wcknvlcnck 😘"
+            data-note="These are a culmination of things (outside of the everyday ordinary OBV) that have made me feel like I have made the best decision of my life in talking to you that one night and not becoming shy and missing my chance. Also the proof of why YOU(only the greatest HUMAN) of all people like ME(only the greatest guy ofc(JUST FOR YOU))MUAHHHHHHH"
+            data-img="images/all_time/things/things-49.jpeg"
+            data-images="images/all_time/things/things-1.PNG, images/all_time/things/things-2.PNG, images/all_time/things/things-3.PNG, images/all_time/things/things-4.PNG, images/all_time/things/things-5.PNG, images/all_time/things/things-6.PNG, images/all_time/things/things-7.PNG, images/all_time/things/things-8.PNG, images/all_time/things/things-9.PNG, images/all_time/things/things-10.PNG, images/all_time/things/things-11.PNG, images/all_time/things/things-12.PNG, images/all_time/things/things-13.PNG, images/all_time/things/things-14.PNG, images/all_time/things/things-15.PNG, images/all_time/things/things-16.PNG, images/all_time/things/things-17.PNG, images/all_time/things/things-18.PNG, images/all_time/things/things-19.PNG, images/all_time/things/things-20.PNG, images/all_time/things/things-21.PNG, images/all_time/things/things-22.PNG, images/all_time/things/things-23.PNG, images/all_time/things/things-24.PNG, images/all_time/things/things-25.PNG, images/all_time/things/things-26.PNG, images/all_time/things/things-27.PNG, images/all_time/things/things-28.PNG, images/all_time/things/things-29.PNG, images/all_time/things/things-30.PNG, images/all_time/things/things-31.PNG, images/all_time/things/things-32.PNG, images/all_time/things/things-33.PNG, images/all_time/things/things-34.PNG, images/all_time/things/things-35.PNG, images/all_time/things/things-36.PNG, images/all_time/things/things-37.PNG, images/all_time/things/things-38.PNG, images/all_time/things/things-39.PNG, images/all_time/things/things-40.PNG, images/all_time/things/things-41.PNG, images/all_time/things/things-42.PNG, images/all_time/things/things-43.jpeg, images/all_time/things/things-44.jpeg, images/all_time/things/things-45.jpeg, images/all_time/things/things-46.jpeg, images/all_time/things/things-47.jpeg, images/all_time/things/things-48.jpeg, images/all_time/things/things-50.jpeg, images/all_time/things/things-51.jpeg">
+
+            <img src="images/all_time/things/things-49.jpeg" alt="Things That Made Me Feel wcknvlcnck 😘" />
+      
+            <div class="card-title">Things That Made Me Feel wcknvlcnck 😘</div>
+    
+          </article>
+
+    
+          <article class="memory-card"
+    
+            data-title="Things You Don't Know I Notice"
+            data-note="Just a few things that I remember even though you might think I don't. I mean the title of this one is pretty self explanatory so there really isn't that much I can say. But I will say that ik you think that I don't remember things and even though as previously seen maybe I forget some things, I still remember a lot of them okay and this is proof, even though this is sooooo obv not a representation of EVERYTHING I remember, it is still a good layout thingy(idk why I can't think of the correct word rn). Here are all the small things that I notice. MUAHHHHHHH"
+            data-img="images/all_time/remembered/remembered-25.jpeg"
+            data-images="images/all_time/remembered/remembered-1.PNG, images/all_time/remembered/remembered-2.PNG, images/all_time/remembered/remembered-3.PNG, images/all_time/remembered/remembered-4.PNG, images/all_time/remembered/remembered-5.PNG, images/all_time/remembered/remembered-6.PNG, images/all_time/remembered/remembered-7.PNG, images/all_time/remembered/remembered-8.PNG, images/all_time/remembered/remembered-9.PNG, images/all_time/remembered/remembered-10.PNG, images/all_time/remembered/remembered-11.PNG, images/all_time/remembered/remembered-12.PNG, images/all_time/remembered/remembered-13.PNG, images/all_time/remembered/remembered-14.PNG, images/all_time/remembered/remembered-15.PNG, images/all_time/remembered/remembered-16.PNG, images/all_time/remembered/remembered-17.PNG, images/all_time/remembered/remembered-18.PNG, images/all_time/remembered/remembered-19.PNG, images/all_time/remembered/remembered-20.PNG, images/all_time/remembered/remembered-21.PNG, images/all_time/remembered/remembered-22.jpeg, images/all_time/remembered/remembered-23.jpeg, images/all_time/remembered/remembered-24.jpeg, images/all_time/remembered/remembered-25.jpeg">
+
+            <img src="images/all_time/remembered/remembered-25.jpeg" alt="Things You Don't Know I Notice" />
+    
+            <div class="card-title">Things You Don't Know I Notice</div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+      <section class="museum-vault" id="ourMuseum">
+  
+        <div class="museum-copy">
+  
+          <div class="small-label">Private Archive</div>
+  
+          <h2>Our Museum</h2>
+  
+          <p>
+     
+            HAYEEEE 🥴😵😵‍💫💘
+    
+          </p>
+  
+        </div>
+
+  
+        <a class="vault-card" href="https://drive.google.com/drive/folders/1ofkPJb22Id_tvayPKIvXrV8_QNIv-tA3?usp=sharing" target="_blank">
+  
+          <div class="vault-shine"></div>
+    <div class="vault-content">
+  
+      
+      <div class="vault-icon">🔒</div>
+  
+
+      <h3>Way to Our Hearts</h3>
+
+      <p>
+
+        The Museum, the great, the one the only, The GOAT and our very own Scrigno Di Ricordi.
+
+        For all the efforts that you have taken for me and for all the great decisions I have
+        made for you, I have this. Our treasure chest of memories, for when you feel like you miss
+        me toooooo much or as you say when I eventually "stop taking efforts" (even though I never will)
+        you can always visit this and realize the GREATNESS, the ELITENESS of our relationship.
+        We truly are the BEST. 😘
+
+      </p>
+
+      <span>Enter Heaven →</span>
+
+    </div>
+
+  </a>
+
+</section>
+      </div>
+    </section>
+
+    <section class="final-message" id="finalMessage">
+      <h2>For You</h2>
+      <p>
+        HELLOOOOOOOOOOOO meri pingsssssssss. I hope you loved this small little gift I made for you! I know it took a lot of time and blood sweat and tears to make this, but I know it will be worth it if I can just see you smile.
+        I wanted this gift to be something that you can always have with you, hence it has been made handy muahahah. Most probably you have already seen our scrigno di ricordi, and my intention with this is to keep it going.
+        I know it's a lot of effort to keep on updating it but also it's a new gmail account so you can upload your pictures to make extra space in your phone also. I want that drive to be filled with all our best moments, whatever it may be.
+        Even if it's a picture from one of our dates or a picture that we really like or something yk what I mean. Obv you can also use it as your own extra storage space but this mainly. I hope you liked this and it shows you how much you mean to me.
+        I tried to make it the best thing ever and ik you know how much effort I put into it which is one of the reasons why you're so special to me. This leads us perfectly into the next section of this fine gentlemanly letter.
+        I have soooooo many special little feelings for you(I mean it to sound creepy btw), that I always try to express to the best of my ability, because you deserve better than the best and even thought I am the most equipped to do this job ik I will always try to be better than the best JUST FOR YOU.
+        I am literally looking at hyiu whuke rtoung(typing) this and I can confirm that you ha ve the absolute BESTEST eyea in the swofld. I think that song that I put for you for girlfriend's day is a good representation because you literally make me speechless sometimes. Aur mujhe, mujhe speechless karti hain(even though songs name is stutter).
+        I still always get butterflies when I see you and talk to you. I am always excited to talk to you, literally woke up today with no energy and started talking to you and did a fashion show and I am doing this now.
+        Abhi tune bola mein tujhe kuch bol bhi nahi sakti because I don't know what you're doing(something to look back on). Coming back to the topic of why you're so lovely and amazing. You're so sweet and caring and tere peeche toh mein fidaaa(not nida) ho gaya hu.
+        I know I am not being able to put my feelings into words but seriously this has never happened to me before which is exactly what you do to me. I am at a loss for words for your magnificence and I know that sounds stupid but lowkey it's true not lowkey, highkey.
+        I really am so lucky to have you in my life and there were so many things that had to be rihgt in lufe fir us to be here and I am so very grateful for those to happen like that.
+        I really love seeing you smile and hence the spelling mistakes in the middle. I get lost in your eyes so frequently and that is what is happening in the duration of me writing this to you. I was initially just going to write this to explain the drive thing but I keep rambling and her we are now.
+        So I need to conclude this, I am sure I can explain myself to you better in person and I will do that for sure when you're crying when you see this MUAHAHAH. I MISSS YOUUUU and you really mean more to me than you will ever know.
+        <br>- Your Svangy the Vampy 🧛
+      </p>
+    </section>
+
+    <section class="final-message" id="subscriptionSection">
+  
+      <h2>Renew Subscription</h2>
+
+  
+      <p id="subscriptionText">
+  
+        Your PPP(Pingu Premium plan) is about to expire.
+  
+      </p>
+
+  
+      <button
+  
+      id="renewBtn"
+  
+      class="play-btn"
+  
+      style="margin-top:20px;"
+  
+      onclick="renewSubscription()">
+  
+      Renew Subscription
+  
+    </button>
+
+  </section>
+  </main>
+
+  <div class="modal" id="memoryModal">
+    <div class="modal-card">
+      <div class="modal-gallery">
+        <button class="gallery-btn left" onclick="previousImage()">‹</button>
+        <img class="modal-image" id="modalImage" src="" alt="Selected memory" />
+
+        <video
+
+          class="modal-image"
+          id="modalVideo"
+          controls
+          autoplay
+          playsinline
+          style="display:none;">
+
+        </video>
+        <button class="gallery-btn right" onclick="nextImage()">›</button>
+      </div>
+
+      <div class="modal-body">
+        <h3 id="modalTitle"></h3>
+        <p id="modalNote"></p>
+        <p id="imageCounter" class="image-counter"></p>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questionScreen = document.getElementById("questionScreen");
+    const netflixScreen = document.getElementById("netflixScreen");
+    const profileScreen = document.getElementById("profileScreen");
+    const profileCard = document.getElementById("profileCard");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    const noButtonMessages = [
+      "No",
+      "Are you sure?",
+      "PLZZZZ NAAAA!!",
+      "Think again",
+      "Wrong answer",
+      "Sach mein aisa karegi?",
+      "Try the red one",
+      "Last chance"
+    ];
+
+    let noClickCount = 0;
+
+    function enterSite() {
+      document.getElementById("questionTitle").textContent = "Will you be my date tonight?";
+      questionScreen.classList.remove("active");
+      profileScreen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openNetflixPage() {
+      profileScreen.classList.remove("active");
+      netflixScreen.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function moveNoButton() {
+  
+      if (noClickCount >= 6) {
+    
+        return;
+      }
+
+      noClickCount++;
+
+      noBtn.textContent =
+      noButtonMessages[
+        Math.min(noClickCount, noButtonMessages.length - 1)
+      ];
+
+  
+      /*
+      Move the button directly into the full question screen.
+      This means it is no longer restricted to the small button row.
+      */
+  
+      if (noBtn.parentElement !== questionScreen) {
+        questionScreen.appendChild(noBtn);
+      }
+
+      noBtn.style.position = "absolute";
+      noBtn.style.right = "auto";
+      noBtn.style.bottom = "auto";
+      noBtn.style.margin = "0";
+      noBtn.style.transform = "none";
+      noBtn.style.zIndex = "999";
+
+  
+      requestAnimationFrame(() => {
+   
+        const padding = 24;
+
+        const screenWidth = questionScreen.clientWidth;
+        const screenHeight = questionScreen.clientHeight;
+
+        const buttonWidth = noBtn.offsetWidth;
+        const buttonHeight = noBtn.offsetHeight;
+
+        const minimumX = padding;
+        const minimumY = padding;
+
+        const maximumX = Math.max(
+          minimumX,
+          screenWidth - buttonWidth - padding
+        );
+
+        const maximumY = Math.max(
+          minimumY,
+          screenHeight - buttonHeight - padding
+        );
+
+        const currentRect = noBtn.getBoundingClientRect();
+
+        let randomX;
+        let randomY;
+        let distance;
+        let attempts = 0;
+
+        /*
+        Keep choosing a position until the new location is
+        reasonably far from the current one.
+        */
+    
+        do {
+    
+          randomX = minimumX + Math.random() * Math.max(0, maximumX - minimumX);
+
+          randomY = minimumY + Math.random() * Math.max(0, maximumY - minimumY);
+
+          distance = Math.hypot(
+            randomX - currentRect.left,
+            randomY - currentRect.top
+          );
+
+        attempts++;
+        } while (distance < 220 && attempts < 30);
+
+        /*
+        Final clamping guarantees that no part of the button
+        can leave the visible question screen.
+        */
+    
+        randomX = Math.min(
+          Math.max(randomX, minimumX),
+          maximumX
+        );
+    
+        randomY = Math.min(
+          Math.max(randomY, minimumY),
+          maximumY
+        );
+
+        noBtn.style.left = `${randomX}px`;
+        noBtn.style.top = `${randomY}px`;
+    
+        if (noClickCount >= 6) {
+          const questionTitle =
+          document.getElementById("questionTitle");
+
+          questionTitle.textContent = "YOU LEAVE ME NO CHOICE!!!";
+
+          questionTitle.style.color = "white";
+
+          noBtn.style.background = "#ff3b3b";
+          noBtn.style.color = "white";
+
+      
+          setTimeout(() => {
+        
+            noBtn.style.transform = "scale(3) rotate(35deg)";
+
+            noBtn.style.opacity = "0";
+            noBtn.style.filter = "blur(10px)";
+          }, 350);
+
+      
+          setTimeout(() => {
+        
+            noBtn.style.display = "none";
+      
+          }, 1900);
+    
+        }
+  
+      });
+
+    }
+
+    yesBtn.addEventListener("click", enterSite);
+    noBtn.addEventListener("click", moveNoButton);
+    profileCard.addEventListener("click", openNetflixPage);
+
+    function scrollToMemories() {
+      document.getElementById("memories").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function openFinalMessage() {
+      document.getElementById("finalMessage").scrollIntoView({ behavior: "smooth" });
+    }
+
+    const modal = document.getElementById("memoryModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalVideo = document.getElementById("modalVideo");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalNote = document.getElementById("modalNote");
+
+    let currentImages = [];
+    let currentImageIndex = 0;
+
+    function updateModalImage() {
+
+    
+      const file = currentImages[currentImageIndex];
+
+    
+      if (
+        file.toLowerCase().endsWith(".mp4") ||
+        file.toLowerCase().endsWith(".mov") ||
+        file.toLowerCase().endsWith(".webm")
+    
+      ) {
+
+          modalImage.style.display = "none";
+
+          modalVideo.style.display = "block";
+          modalVideo.src = file;
+          modalVideo.currentTime = 0;
+          modalVideo.play();
+
+        } else {
+
+          modalVideo.pause();
+          modalVideo.style.display = "none";
+
+          modalImage.style.display = "block";
+          modalImage.src = file;
+        }
+
+        const counter = document.getElementById("imageCounter");
+        const leftBtn = document.querySelector(".gallery-btn.left");
+        const rightBtn = document.querySelector(".gallery-btn.right");
+
+        if (currentImages.length > 1) {
+          counter.textContent = `${currentImageIndex + 1} / ${currentImages.length}`;
+          leftBtn.style.display = "flex";
+          rightBtn.style.display = "flex";
+        } else {
+          counter.textContent = "";
+          leftBtn.style.display = "none";
+          rightBtn.style.display = "none";
+        }
+
+
+    }
+
+    function nextImage() {
+      if (currentImages.length === 0) return;
+      currentImageIndex = (currentImageIndex + 1) % currentImages.length;
+      updateModalImage();
+    }
+
+    function previousImage() {
+      if (currentImages.length === 0) return;
+      currentImageIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
+      updateModalImage();
+    }
+
+    document.querySelectorAll(".memory-card").forEach(card => {
+      card.addEventListener("click", () => {
+        modalTitle.textContent = card.dataset.title;
+        modalNote.textContent = card.dataset.note;
+
+        if (card.dataset.images) {
+          currentImages = card.dataset.images.split(",").map(image => image.trim()).filter(Boolean);
+        } else {
+          currentImages = [card.dataset.img];
+        }
+
+        currentImageIndex = 0;
+        updateModalImage();
+        modal.classList.add("active");
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove("active");
+
+      modalVideo.pause();
+      modalVideo.currentTime = 0;
+    }
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    
+    function renewSubscription() {
+  
+      const text = document.getElementById("subscriptionText");
+  
+      const button = document.getElementById("renewBtn");
+
+  
+      button.disabled = true;
+  
+      button.textContent = "Renewing...";
+
+  
+      text.innerHTML = `
+  
+      Checking account status...
+  
+      `;
+
+  
+      setTimeout(() => {
+  
+        text.innerHTML = `
+  
+        <strong>Subscription successfully renewed.</strong>
+        <br><br>
+        ✓ Unlimited kisses<br>
+        ✓ Always have me lost in your eyes<br>
+        ✓ 24/7 customer support<br>
+        ✓ Free bad jokes FOR LIFE MUAHAHAH<br>
+        ✓ Forever flirting<br>
+        ✓ Lifetime ke liye na nahi bolunga<br>
+        ✓ Baat aur acchi se sun lunga (if that's possible)<br>
+        ✓ Cured Michmichi
+        <br><br>
+
+        <strong>Plan:</strong> Chhavi Premium<br>
+        <strong>Price:</strong> One kiss per day? plsssss pretty plssssss 🙏<br>
+        <strong>Next billing date:</strong> 7th May 7810
+        <br><br>
+
+        I guess I do know you well 🤷
+        <br><br>
+
+        Maybe I do listen after all
+        <br><br>
+
+        Thank you for choosing this service.
+        <br><br>
+
+        I know there are a lot of things worth watching,
+        but you're still my favorite. 👀
+
+        `;
+
+
+        button.style.display = "none";
+
+
+      }, 2000);
+
+    }
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+
+      if (modal.classList.contains("active") && event.key === "ArrowRight") {
+        nextImage();
+      }
+
+      if (modal.classList.contains("active") && event.key === "ArrowLeft") {
+        previousImage();
+      }
+    });
+
+    function toggleHintPlayer() {
+  
+      const hintBox = document.getElementById("hintBox");
+  
+      const cdButton = document.getElementById("cdButton");
+
+  
+      hintBox.classList.toggle("active");
+  
+      cdButton.classList.toggle("spinning");
+
+    }
+
+  </script>
+  
+  <div class="hint-player">
+  
+    <div class="hint-box" id="hintBox">
+  
+      <h3>The Kiss Hint Collection</h3>
+  
+      <p>
+  
+        Apparently subtitles were required.
+  
+        <br><br>
+  
+        Communication attempts: 6<br>
+  
+        Successful: eventually.
+  
+      </p>
+
+  
+      <a class="spotify-btn" href="https://open.spotify.com/playlist/4HBYiVhw2oNGUZrpn1IvEN?si=821c3ddc10b544a1" target="_blank">
+  
+        Translate the Hints
+  
+      </a>
+  
+    </div>
+
+  
+    <button class="cd-button" id="cdButton" onclick="toggleHintPlayer()"></button>
+
+  </div>
+</body>
+</html>
